@@ -94,7 +94,7 @@ class AuthenticationProvider extends ChangeNotifier {
     }
   }
 
-  //Google Auth
+  //Google Authentication
   Future<void> googleRegister(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
