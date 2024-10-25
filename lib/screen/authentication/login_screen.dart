@@ -2,11 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:provider/provider.dart';
 import 'package:shopping_cart_example/components/custom_login_btn.dart';
 import 'package:shopping_cart_example/helpers/debounce_helper.dart';
 import 'package:shopping_cart_example/helpers/toast_helper.dart';
+import 'package:shopping_cart_example/providers/auth_provider.dart';
 import 'package:shopping_cart_example/screen/authentication/forget_password_screen.dart';
 import 'package:shopping_cart_example/screen/authentication/register_screen.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -62,94 +65,137 @@ class _LoginScreenState extends State<LoginScreen> {
         title: const Text("Welcome Back"),
       ),
       backgroundColor: Colors.grey[100],
-      body: ListView(
-        padding: const EdgeInsets.all(20.0),
-        children: [
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.account_circle,
-                  size: 200.0,
-                  color: Colors.grey[300],
-                ),
-                const SizedBox(height: 20),
-                // Wrapping the form in FormBuilder
-                FormBuilder(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      FormBuilderTextField(
-                        name: 'email',
-                        decoration: const InputDecoration(labelText: 'Email'),
-                        keyboardType: TextInputType.emailAddress,
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
-                          FormBuilderValidators.email(),
-                        ]),
-                      ),
-                      const SizedBox(height: 25),
-                      FormBuilderTextField(
-                        name: 'password',
-                        decoration:
-                            const InputDecoration(labelText: 'Password'),
-                        obscureText: true,
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
-                          FormBuilderValidators.password(),
-                        ]),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 25),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const ForgetPasswordScreen())),
-                        child: Text(
-                          "Forget Password?",
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 25),
-                CustomLoginbtn(
-                  onTap: userSignIn,
-                  text: "Login",
-                ),
-                const SizedBox(height: 25),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      body: Consumer<AuthenticationProvider>(
+        builder: (context, provider, child) {
+          return ListView(
+            padding: const EdgeInsets.all(20.0),
+            children: [
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text("Not a member?"),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const RegisterScreen())),
-                      child: const Text(
-                        "Register Now",
-                        style: TextStyle(color: Colors.blueAccent),
+                    Icon(
+                      Icons.account_circle,
+                      size: 200.0,
+                      color: Colors.grey[300],
+                    ),
+                    const SizedBox(height: 20),
+                    // Wrapping the form in FormBuilder
+                    FormBuilder(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          FormBuilderTextField(
+                            name: 'email',
+                            decoration:
+                                const InputDecoration(labelText: 'Email'),
+                            keyboardType: TextInputType.emailAddress,
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                              FormBuilderValidators.email(),
+                            ]),
+                          ),
+                          const SizedBox(height: 25),
+                          FormBuilderTextField(
+                            name: 'password',
+                            decoration:
+                                const InputDecoration(labelText: 'Password'),
+                            obscureText: true,
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                              FormBuilderValidators.password(),
+                            ]),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgetPasswordScreen())),
+                            child: Text(
+                              "Forget Password?",
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    CustomLoginbtn(
+                      onTap: userSignIn,
+                      text: "Login",
+                    ),
+                    const SizedBox(height: 25),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Not a member?"),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const RegisterScreen())),
+                          child: const Text(
+                            "Register Now",
+                            style: TextStyle(color: Colors.blueAccent),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    const Flexible(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: Colors.grey,
+                              thickness: 1,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text("or"),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: Colors.grey,
+                              thickness: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SignInButton(
+                        Buttons.google,
+                        onPressed: () => provider.googleRegister(context),
+                        padding: const EdgeInsets.all(10),
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
